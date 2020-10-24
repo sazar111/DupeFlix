@@ -2,11 +2,11 @@ import React,{useState,useEffect} from 'react';
 import axios from './axios';
 import "./Row.css";
 import YouTube from "react-youtube"
-import movieTrailer from 'movie-trailer'
+import Link from './youtube-link.js'
 
 const base_url ="https://image.tmdb.org/t/p/original/";
 
-function Row({ title ,fetchUrl,isLargeRow}) {
+function Row({ title,first ,fetchUrl,isLargeRow}) {
     const [movies ,setMovies] = useState([]);
     const [trailerUrl, setTrailerUrl]=useState("");
 
@@ -20,38 +20,46 @@ function Row({ title ,fetchUrl,isLargeRow}) {
     },[fetchUrl]);
 
     const opts ={
-        height:"390",
+        height:"490",
         width:"100%",
-        playerVars:{autoplay:1},
+        playerVars:{autoplay:1,controls:0},
+        
     };
 
-    const handleClick = (movie) =>{
-        if(trailerUrl){
+ 
+
+    const handleOrginal=(movie)=>{
+        if(trailerUrl === Link[movie.id]){
             setTrailerUrl("");
         }else{
-            movieTrailer(movie?.name || movie?.release_date , movie?.release_date)
-             .then((url) => {
-                const urlParams = new URLSearchParams(new URL(url).search);
-                setTrailerUrl(urlParams.get('v'));
-             })
-             .catch((error) => console.log(error));
-            }
-    };
+            setTrailerUrl(Link[movie.id])
+        }
+    }
     
-    return(
-        <div className="row">
-            <h2>{title}</h2>
-            <div className="row_posters ">
-                {movies.map((movie)=> (
-                 <img 
+    const createRow= movie => {
+        return(
+            
+                <img 
                     key={movie.id}
-                    onClick={() => handleClick(movie)}
-                    className={` row_poster ${isLargeRow && "row_posterLarge"}`} 
+                    onClick={() => isLargeRow && handleOrginal(movie)}
+                    className={`row_poster ${isLargeRow && "row_posterLarge"}`}
                     src={`${base_url}${isLargeRow ? movie.poster_path : movie.backdrop_path}`} 
                     alt={movies.name} />
-                ))}
+               );
+    }
+
+    return(
+        <div className={` row ${first && "row_first"} `} >
+            <h2>{title}</h2>
+            <div className="row_posters ">
+                {movies.map((movie)=> 
+                (createRow(movie))
+                
+                )}
             </div>
-            {trailerUrl &&  <YouTube videoId={trailerUrl} opts={opts}/>}
+            {trailerUrl &&  <YouTube class="trailer" style="display:none;" controls='0' rel='0'  videoId={trailerUrl} opts={opts}/>}
+            
+
         </div>
     );
 }

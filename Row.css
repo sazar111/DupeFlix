@@ -1,6 +1,10 @@
 .row{
-    margin-left: 20px;
+    margin-left: 40px;
     color: white;
+}
+
+.row_first{
+    margin-top: -150px;    
 }
 
 .row_posters {
@@ -15,6 +19,7 @@
 }
 
 .row_poster {
+  border-radius: 7px;
   object-fit: contain;
   width: 120%;
   max-height: 130px;
